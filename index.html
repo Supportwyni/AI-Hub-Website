@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Staff Hub · Enterprise AI Workflow Platform</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<style>
+  :root {
+    --primary: #6C3AED;
+    --primary-light: #8B5CF6;
+    --primary-dark: #5B21B6;
+    --accent: #06B6D4;
+    --accent-light: #22D3EE;
+    --bg: #F8FAFC;
+    --bg-card: #FFFFFF;
+    --text: #1E293B;
+    --text-light: #64748B;
+    --text-lighter: #94A3B8;
+    --border: #E2E8F0;
+    --gradient-1: linear-gradient(135deg, #6C3AED 0%, #06B6D4 100%);
+    --gradient-2: linear-gradient(135deg, #8B5CF6 0%, #22D3EE 100%);
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 20px rgba(0,0,0,0.08);
+    --shadow-lg: 0 10px 40px rgba(0,0,0,0.12);
+    --shadow-glow: 0 0 40px rgba(108,58,237,0.15);
+    --radius: 16px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; font-size: 16px; scroll-padding-top: 88px; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg); color: var(--text);
+    overflow-x: hidden; line-height: 1.6;
+  }
+
+  header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: rgba(255,255,255,0.92); backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border); transition: box-shadow 0.3s ease;
+  }
+  header.scrolled { box-shadow: var(--shadow-md); }
+  .header-inner {
+    max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; height: 72px;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  }
+  .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text); flex-shrink: 0; }
+  .logo-icon {
+    width: 40px; height: 40px; background: var(--gradient-1); border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;
+  }
+  .logo-text {
+    font-size: 1.2rem; font-weight: 800; letter-spacing: -0.5px;
+    background: var(--gradient-1); -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .nav-links {
+    display: flex; align-items: center; gap: 4px;
+    background: #F1F5F9; padding: 4px; border-radius: 12px;
+  }
+  .nav-links a {
+    padding: 8px 16px; border-radius: 9px; font-size: 0.85rem; font-weight: 600;
+    color: var(--text-light); text-decoration: none; transition: all 0.2s; white-space: nowrap;
+  }
+  .nav-links a:hover, .nav-links a.active {
+    background: white; color: var(--primary); box-shadow: var(--shadow-sm);
+  }
+  .header-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .btn {
+    padding: 10px 20px; border-radius: 10px; font-size: 0.88rem; font-weight: 600;
+    cursor: pointer; transition: all 0.25s ease; border: none;
+    font-family: inherit; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-ghost { background: transparent; color: var(--text); }
+  .btn-ghost:hover { background: rgba(108,58,237,0.08); color: var(--primary); }
+  .btn-primary { background: var(--gradient-1); color: white; box-shadow: 0 4px 15px rgba(108,58,237,0.3); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(108,58,237,0.4); }
+  .btn-outline {
+    background: white; color: var(--primary); border: 2px solid rgba(108,58,237,0.2);
+  }
+  .btn-outline:hover { border-color: var(--primary); background: rgba(108,58,237,0.04); }
+
+  .hero {
+    min-height: 100vh; display: flex; align-items: center;
+    padding: 100px 2rem 60px; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(108,58,237,0.08) 0%, transparent 70%);
+    border-radius: 50%; pointer-events: none;
+  }
+  .hero-inner {
+    max-width: 1280px; margin: 0 auto; width: 100%;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+    align-items: center; position: relative; z-index: 1;
+  }
+  .hero-left { display: flex; flex-direction: column; align-items: center; gap: 24px; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px;
+    background: rgba(108,58,237,0.08); border: 1px solid rgba(108,58,237,0.15);
+    border-radius: 50px; font-size: 0.82rem; font-weight: 600; color: var(--primary);
+  }
+  .hero-badge .dot { width: 8px; height: 8px; background: #10B981; border-radius: 50%; animation: pulse-dot 2s infinite; }
+  @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .hero-title {
+    font-size: 3rem; font-weight: 800; line-height: 1.15;
+    letter-spacing: -1.5px; text-align: center;
+  }
+  .hero-title .gradient {
+    background: var(--gradient-1); -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .hero-subtitle { font-size: 1.05rem; color: var(--text-light); text-align: center; max-width: 480px; }
+  .hero-logo-placeholder {
+    width: 200px; height: 200px; border-radius: 24px;
+    background: var(--gradient-1); display: flex; align-items: center; justify-content: center;
+    font-size: 72px; color: white; box-shadow: 0 20px 40px rgba(108,58,237,0.2);
+  }
+
+  .chatbox {
+    background: var(--bg-card); border-radius: 20px; box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border); overflow: hidden; max-width: 480px; margin: 0 auto;
+  }
+  .chatbox-header {
+    background: var(--gradient-1); padding: 20px 24px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .chatbox-avatar {
+    width: 44px; height: 44px; background: rgba(255,255,255,0.2);
+    border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white;
+  }
+  .chatbox-header-info h3 { color: white; font-size: 1rem; font-weight: 700; }
+  .chatbox-header-info p { color: rgba(255,255,255,0.75); font-size: 0.8rem; }
+  .chatbox-body {
+    padding: 24px; height: 280px; overflow-y: auto;
+    display: flex; flex-direction: column; gap: 16px; background: #F8FAFF;
+  }
+  .chat-msg { display: flex; gap: 10px; max-width: 85%; }
+  .chat-msg.bot { align-self: flex-start; }
+  .chat-msg.user { align-self: flex-end; flex-direction: row-reverse; }
+  .chat-msg-avatar {
+    width: 32px; height: 32px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0;
+  }
+  .chat-msg.bot .chat-msg-avatar { background: var(--gradient-1); color: white; }
+  .chat-msg.user .chat-msg-avatar { background: #E0E7FF; color: var(--primary); }
+  .chat-msg-bubble { padding: 12px 16px; border-radius: 14px; font-size: 0.88rem; line-height: 1.5; }
+  .chat-msg.bot .chat-msg-bubble { background: white; border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+  .chat-msg.user .chat-msg-bubble { background: var(--gradient-1); color: white; border-bottom-right-radius: 4px; }
+  .chatbox-footer {
+    padding: 16px 20px; border-top: 1px solid var(--border);
+    display: flex; gap: 10px; background: white;
+  }
+  .chatbox-footer input {
+    flex: 1; padding: 12px 16px; border: 2px solid var(--border);
+    border-radius: 12px; font-size: 0.88rem; font-family: inherit; outline: none;
+  }
+  .chatbox-footer button {
+    width: 46px; height: 46px; border: none; background: var(--gradient-1);
+    color: white; border-radius: 12px; cursor: pointer; font-size: 16px;
+  }
+
+  section { padding: 100px 2rem; }
+  .section-header { text-align: center; margin-bottom: 70px; }
+  .section-label {
+    display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px;
+    background: rgba(108,58,237,0.08); border-radius: 50px;
+    font-size: 0.82rem; font-weight: 600; color: var(--primary); margin-bottom: 16px;
+  }
+  .section-title { font-size: 2.5rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 16px; }
+  .section-desc { font-size: 1.05rem; color: var(--text-light); max-width: 600px; margin: 0 auto; }
+
+  .product-list { max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 80px; }
+  .product-card {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center;
+    opacity: 0; transform: translateY(40px);
+    transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .product-card.visible { opacity: 1; transform: translateY(0); }
+  .product-card:nth-child(even) { direction: rtl; }
+  .product-card:nth-child(even) > * { direction: ltr; }
+  .product-image-wrap {
+    border-radius: 16px; overflow: hidden;
+    box-shadow: var(--shadow-lg); border: 1px solid var(--border); background: #f1f5f9;
+  }
+  .product-info { display: flex; flex-direction: column; gap: 16px; }
+  .product-number {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 44px; height: 44px; background: var(--gradient-1); color: white;
+    border-radius: 12px; font-size: 1.1rem; font-weight: 800;
+  }
+  .product-info h3 { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.5px; }
+  .product-info p { font-size: 0.98rem; color: var(--text-light); line-height: 1.7; }
+  .product-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .product-tag {
+    padding: 6px 14px; background: rgba(108,58,237,0.06);
+    border: 1px solid rgba(108,58,237,0.12); border-radius: 8px;
+    font-size: 0.78rem; font-weight: 600; color: var(--primary);
+  }
+
+  /* UI mock screenshots */
+  .ui-mock { font-size: 11px; line-height: 1.4; color: #334155; }
+  .ui-mock-bar {
+    background: white; border-bottom: 1px solid #e2e8f0; padding: 10px 14px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .ui-mock-bar .brand { font-weight: 700; color: #1e293b; font-size: 12px; }
+  .ui-mock-bar .sub { font-size: 10px; color: #64748b; }
+  .ui-mock-body { display: flex; min-height: 280px; background: #f8fafc; }
+  .ui-sidebar {
+    width: 130px; background: white; border-right: 1px solid #e2e8f0; padding: 10px 8px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .ui-nav-item {
+    padding: 6px 8px; border-radius: 6px; font-size: 10px; color: #64748b;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .ui-nav-item.active { background: #eff6ff; color: #2563eb; font-weight: 600; }
+  .ui-main { flex: 1; padding: 14px; overflow: hidden; }
+  .ui-greeting { font-size: 16px; font-weight: 700; margin-bottom: 12px; color: #1e293b; }
+  .ui-input-box {
+    background: white; border: 1px solid #e2e8f0; border-radius: 10px;
+    padding: 12px; margin-bottom: 12px; min-height: 56px; color: #94a3b8; font-size: 11px;
+  }
+  .ui-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .ui-chip {
+    padding: 3px 8px; border-radius: 999px; background: #f1f5f9;
+    border: 1px solid #e2e8f0; font-size: 9px; color: #475569;
+  }
+  .ui-skills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .ui-skill {
+    background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px;
+  }
+  .ui-skill .title { font-weight: 600; font-size: 10px; margin-bottom: 4px; }
+  .ui-skill .tag { font-size: 8px; color: #2563eb; background: #eff6ff; padding: 1px 5px; border-radius: 4px; }
+
+  .ui-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .ui-metric {
+    background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px;
+  }
+  .ui-metric .label { font-size: 9px; color: #64748b; margin-bottom: 4px; }
+  .ui-metric .value { font-size: 18px; font-weight: 800; color: #1e293b; }
+  .ui-metric .trend { font-size: 8px; color: #10b981; margin-top: 2px; }
+
+  .ui-player {
+    background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .ui-play-btn {
+    width: 28px; height: 28px; border-radius: 50%; background: #2563eb; color: white;
+    display: flex; align-items: center; justify-content: center; font-size: 10px;
+  }
+  .ui-wave { flex: 1; height: 24px; background: linear-gradient(90deg, #cbd5e1 30%, #e2e8f0 30% 35%, #cbd5e1 35% 60%, #e2e8f0 60%); border-radius: 4px; }
+  .ui-transcript { display: flex; flex-direction: column; gap: 8px; }
+  .ui-speaker-block {
+    background: white; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;
+  }
+  .ui-speaker-head {
+    background: #eff6ff; padding: 5px 10px; font-size: 9px; font-weight: 600; color: #2563eb;
+    display: flex; justify-content: space-between;
+  }
+  .ui-speaker-text { padding: 8px 10px; font-size: 10px; color: #475569; }
+
+  .features { background: linear-gradient(180deg, #F8FAFC 0%, #EEF2FF 50%, #F8FAFC 100%); }
+  .features-grid {
+    max-width: 1100px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  }
+  .feature-card {
+    background: var(--bg-card); border-radius: var(--radius); padding: 32px 26px;
+    border: 1px solid var(--border);
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity: 0; transform: translateY(30px);
+    box-shadow: var(--shadow-sm);
+  }
+  .feature-card.visible { opacity: 1; transform: translateY(0); }
+  .feature-card:hover {
+    transform: translateY(-10px); box-shadow: var(--shadow-lg), var(--shadow-glow);
+    border-color: rgba(108,58,237,0.2);
+  }
+  .feature-icon {
+    width: 52px; height: 52px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; margin-bottom: 18px;
+  }
+  .feature-icon.purple { background: rgba(108,58,237,0.1); color: var(--primary); }
+  .feature-icon.cyan { background: rgba(6,182,212,0.1); color: var(--accent); }
+  .feature-icon.green { background: rgba(16,185,129,0.1); color: #10B981; }
+  .feature-icon.orange { background: rgba(245,158,11,0.1); color: #F59E0B; }
+  .feature-icon.pink { background: rgba(236,72,153,0.1); color: #EC4899; }
+  .feature-icon.blue { background: rgba(59,130,246,0.1); color: #3B82F6; }
+  .feature-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; }
+  .feature-card p { font-size: 0.88rem; color: var(--text-light); line-height: 1.6; }
+
+  .pricing { background: white; }
+  .pricing-grid {
+    max-width: 1280px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+  }
+  .pricing-card {
+    background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 28px 24px; display: flex; flex-direction: column; gap: 16px;
+    transition: all 0.3s; opacity: 0; transform: translateY(30px);
+  }
+  .pricing-card.visible { opacity: 1; transform: translateY(0); }
+  .pricing-card:hover { box-shadow: var(--shadow-md); transform: translateY(-4px); }
+  .pricing-card.popular {
+    border-color: var(--primary); background: linear-gradient(180deg, #faf5ff 0%, #f8fafc 100%);
+    position: relative;
+  }
+  .pricing-badge {
+    position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+    background: var(--gradient-1); color: white; font-size: 0.72rem; font-weight: 700;
+    padding: 4px 14px; border-radius: 999px;
+  }
+  .pricing-card h3 { font-size: 1.1rem; font-weight: 700; }
+  .pricing-card .desc { font-size: 0.85rem; color: var(--text-light); min-height: 40px; }
+  .pricing-card .price { font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; }
+  .pricing-card .period { font-size: 0.85rem; color: var(--text-light); font-weight: 500; }
+  .pricing-card ul { list-style: none; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .pricing-card li { font-size: 0.88rem; color: var(--text-light); display: flex; align-items: center; gap: 8px; }
+  .pricing-card li i { color: var(--primary); font-size: 0.75rem; }
+  .pricing-card .btn { width: 100%; justify-content: center; margin-top: auto; }
+
+  .addons { max-width: 900px; margin: 50px auto 0; text-align: center; }
+  .addons h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 24px; }
+  .addons-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .addon-card {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px 16px;
+  }
+  .addon-card .amount { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+  .addon-card .cost { font-size: 1.4rem; font-weight: 800; color: var(--primary); }
+  .pricing-note { text-align: center; margin-top: 32px; font-size: 0.85rem; color: var(--text-lighter); }
+
+  .footer { background: #0F172A; color: #CBD5E1; padding: 80px 2rem 40px; }
+  .footer-inner { max-width: 1280px; margin: 0 auto; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 60px; }
+  .footer-brand .logo-text { font-size: 1.3rem; font-weight: 800; color: white; margin-bottom: 16px; display: block; -webkit-text-fill-color: white; }
+  .footer-brand p { font-size: 0.9rem; line-height: 1.7; color: #94A3B8; max-width: 320px; }
+  .footer-col h4 { color: white; font-size: 0.95rem; font-weight: 700; margin-bottom: 20px; }
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .footer-col a { color: #94A3B8; text-decoration: none; font-size: 0.88rem; transition: color 0.2s; }
+  .footer-col a:hover { color: white; }
+  .footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.08); padding-top: 30px;
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
+  }
+  .footer-bottom p { font-size: 0.82rem; color: #64748B; }
+  .footer-bottom-links { display: flex; gap: 24px; }
+  .footer-bottom-links a { font-size: 0.82rem; color: #64748B; text-decoration: none; }
+  .footer-bottom-links a:hover { color: white; }
+
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(15,23,42,0.6);
+    backdrop-filter: blur(8px); z-index: 2000;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; visibility: hidden; transition: all 0.3s ease;
+  }
+  .modal-overlay.active { opacity: 1; visibility: visible; }
+  .modal {
+    background: white; border-radius: 24px; width: 440px; max-width: 90vw;
+    padding: 40px; position: relative;
+    transform: scale(0.9) translateY(20px);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+  }
+  .modal-overlay.active .modal { transform: scale(1) translateY(0); }
+  .modal-close {
+    position: absolute; top: 16px; right: 16px; width: 36px; height: 36px;
+    border: none; background: rgba(0,0,0,0.05); border-radius: 10px; cursor: pointer;
+  }
+  .modal h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 8px; }
+  .modal .subtitle { color: var(--text-light); font-size: 0.92rem; margin-bottom: 28px; }
+  .modal-tabs { display: flex; background: #F1F5F9; border-radius: 12px; padding: 4px; margin-bottom: 28px; }
+  .modal-tab {
+    flex: 1; padding: 10px; text-align: center; border: none; background: transparent;
+    border-radius: 10px; font-size: 0.88rem; font-weight: 600; color: var(--text-light); cursor: pointer;
+  }
+  .modal-tab.active { background: white; color: var(--primary); box-shadow: var(--shadow-sm); }
+  .form-group { margin-bottom: 18px; }
+  .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; }
+  .form-group input {
+    width: 100%; padding: 12px 16px; border: 2px solid var(--border);
+    border-radius: 12px; font-size: 0.9rem; font-family: inherit; outline: none;
+  }
+  .form-panel { display: none; }
+  .form-panel.active { display: block; }
+  .modal .btn-primary { width: 100%; justify-content: center; padding: 14px; margin-top: 8px; }
+
+  .scroll-top {
+    position: fixed; bottom: 30px; right: 30px; width: 48px; height: 48px;
+    background: var(--gradient-1); color: white; border: none; border-radius: 14px;
+    cursor: pointer; font-size: 18px;
+    opacity: 0; visibility: hidden; transition: all 0.3s; z-index: 999;
+  }
+  .scroll-top.visible { opacity: 1; visibility: visible; }
+
+  @media (max-width: 1024px) {
+    .nav-links { display: none; }
+    .pricing-grid { grid-template-columns: repeat(2, 1fr); }
+    .addons-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 900px) {
+    .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+    .hero-title { font-size: 2.2rem; }
+    .product-card { grid-template-columns: 1fr; gap: 30px; }
+    .product-card:nth-child(even) { direction: ltr; }
+    .features-grid { grid-template-columns: repeat(2, 1fr); }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 600px) {
+    .features-grid, .pricing-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .section-title { font-size: 1.8rem; }
+    .addons-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header id="header">
+  <div class="header-inner">
+    <a href="#hero" class="logo">
+      <div class="logo-icon"><i class="fa-solid fa-robot"></i></div>
+      <span class="logo-text">AI Staff Hub</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#hero" class="active">Home</a>
+      <a href="#products">Products</a>
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="header-actions">
+      <a href="https://hub.notonlyoffice.ai/login" class="btn btn-ghost">Sign In</a>
+      <a href="https://hub.notonlyoffice.ai/login" class="btn btn-primary">Sign Up</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero" id="hero">
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-badge"><span class="dot"></span> WYNI · Enterprise AI Workflow</div>
+      <h1 class="hero-title">Your Team of<br><span class="gradient">AI Staff</span> Awaits</h1>
+      <p class="hero-subtitle">Deploy intelligent AI agents across finance, HR, legal, ops, and marketing. Automate meetings, documents, and workflows — while keeping M365, CRM, and ERP as your systems of record.</p>
+      <div class="hero-logo-placeholder"><i class="fa-solid fa-users-gear"></i></div>
+    </div>
+    <div class="hero-right">
+      <div class="chatbox">
+        <div class="chatbox-header">
+          <div class="chatbox-avatar"><i class="fa-solid fa-robot"></i></div>
+          <div class="chatbox-header-info">
+            <h3>AI Assistant</h3>
+            <p>Online now</p>
+          </div>
+        </div>
+        <div class="chatbox-body" id="chatBody">
+          <div class="chat-msg bot">
+            <div class="chat-msg-avatar"><i class="fa-solid fa-robot"></i></div>
+            <div class="chat-msg-bubble">Hi! Welcome to AI Staff Hub. Ask about meetings, documents, or how AI staff can help your team.</div>
+          </div>
+        </div>
+        <div class="chatbox-footer">
+          <input type="text" id="chatInput" placeholder="Ask something…" onkeypress="if(event.key==='Enter')sendChat()">
+          <button onclick="sendChat()"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="products" id="products">
+  <div class="section-header">
+    <div class="section-label"><i class="fa-solid fa-cube"></i> Our Products</div>
+    <h2 class="section-title">Powerful AI Solutions</h2>
+    <p class="section-desc">Agentic workflows, knowledge hub, and department AI staff — built for real operations in Hong Kong and Greater China.</p>
+  </div>
+  <div class="product-list">
+
+    <!-- Row 1: photo left, text right -->
+    <div class="product-card" data-animate>
+      <div class="product-image-wrap">
+        <div class="ui-mock">
+          <div class="ui-mock-bar">
+            <div><div class="brand">AI Staff Hub</div><div class="sub">Enterprise AI Workflow Platform</div></div>
+            <div class="sub">Felicia Pang · Admin</div>
+          </div>
+          <div class="ui-mock-body">
+            <div class="ui-sidebar">
+              <div class="ui-nav-item">AI Staff</div>
+              <div class="ui-nav-item active"><i class="fa-solid fa-comment"></i> Chat</div>
+              <div class="ui-nav-item">New Task</div>
+              <div class="ui-nav-item">Auto Tasks</div>
+              <div class="ui-nav-item">Projects</div>
+              <div class="ui-nav-item">Meetings</div>
+              <div class="ui-nav-item">Knowledge</div>
+            </div>
+            <div class="ui-main">
+              <div class="ui-greeting">Hi Felicia, ready to dive in?</div>
+              <div class="ui-input-box">Ask a question about your documents…</div>
+              <div class="ui-chips">
+                <span class="ui-chip">Fast</span><span class="ui-chip">Agent</span><span class="ui-chip">Deep</span><span class="ui-chip">Tools · 2</span>
+              </div>
+              <div class="ui-skills">
+                <div class="ui-skill"><div class="title">OCR Text Extra…</div><span class="tag">DOCS</span></div>
+                <div class="ui-skill"><div class="title">Read Documents</div><span class="tag">PDF</span></div>
+                <div class="ui-skill"><div class="title">Bug Fix Report</div><span class="tag">DOCS</span></div>
+                <div class="ui-skill"><div class="title">Word Documents</div><span class="tag">DOCS</span></div>
+                <div class="ui-skill"><div class="title">PDF Documents</div><span class="tag">PDF</span></div>
+                <div class="ui-skill"><div class="title">PowerPoint</div><span class="tag">SLIDES</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="product-info">
+        <div class="product-number">01</div>
+        <h3>Intelligent Chat Workspace</h3>
+        <p>Ask questions across your document library with Fast, Agent, and Deep modes. Recommended skills surface OCR, PDF parsing, Word drafting, and slide design — so teams start productive work in one click instead of hunting through shared drives.</p>
+        <div class="product-tags">
+          <span class="product-tag">Agentic Skills</span>
+          <span class="product-tag">Knowledge Hub</span>
+          <span class="product-tag">Multi-mode AI</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 2: text left, photo right -->
+    <div class="product-card" data-animate>
+      <div class="product-image-wrap">
+        <div class="ui-mock">
+          <div class="ui-mock-bar">
+            <div><div class="brand">AI Digital Staff at work</div><div class="sub">Intelligent automation across your organization</div></div>
+          </div>
+          <div class="ui-mock-body" style="flex-direction:column; padding:14px;">
+            <div class="ui-chips" style="margin-bottom:12px;">
+              <span class="ui-chip">Search users</span>
+              <span class="ui-chip">27/06 – 03/07/2026</span>
+            </div>
+            <div class="ui-metrics">
+              <div class="ui-metric">
+                <div class="label">Daily Customer Email Replied</div>
+                <div class="value">0</div>
+                <div class="trend">↑ 16% vs range</div>
+              </div>
+              <div class="ui-metric">
+                <div class="label">Uploaded Meetings</div>
+                <div class="value">2</div>
+                <div class="trend">Recorded & imported</div>
+              </div>
+              <div class="ui-metric">
+                <div class="label">Task Completion Today</div>
+                <div class="value">26</div>
+                <div class="trend">Completed agent chats</div>
+              </div>
+              <div class="ui-metric">
+                <div class="label">Document Data Extracted</div>
+                <div class="value">0</div>
+                <div class="trend">↑ 9% vs range</div>
+              </div>
+              <div class="ui-metric">
+                <div class="label">Uploaded Documents</div>
+                <div class="value">0</div>
+                <div class="trend">Document Hub</div>
+              </div>
+              <div class="ui-metric">
+                <div class="label">Top 3 Used Skills</div>
+                <div class="value" style="font-size:14px;">—</div>
+                <div class="trend">Usage analytics</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="product-info">
+        <div class="product-number">02</div>
+        <h3>AI Digital Staff Dashboard</h3>
+        <p>See how your AI workforce performs at a glance — emails handled, meetings processed, tasks completed, and documents extracted. Filter by user and date range to track adoption and ROI across departments.</p>
+        <div class="product-tags">
+          <span class="product-tag">PulseBoard Analytics</span>
+          <span class="product-tag">Department KPIs</span>
+          <span class="product-tag">Usage Tracking</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 3: photo left, text right -->
+    <div class="product-card" data-animate>
+      <div class="product-image-wrap">
+        <div class="ui-mock">
+          <div class="ui-mock-bar">
+            <div><div class="brand">Meeting Transcript</div><div class="sub">Summaries & notes</div></div>
+          </div>
+          <div class="ui-mock-body" style="flex-direction:column; padding:14px;">
+            <div class="ui-player">
+              <div class="ui-play-btn"><i class="fa-solid fa-play"></i></div>
+              <div class="ui-wave"></div>
+              <span style="font-size:9px;color:#64748b;">1.0× · 12:34</span>
+            </div>
+            <div class="ui-transcript">
+              <div class="ui-speaker-block">
+                <div class="ui-speaker-head"><span>Speaker 1</span><span>00:12</span></div>
+                <div class="ui-speaker-text">We've evolved from simple bots to agentic workflows with skills across corporate departments…</div>
+              </div>
+              <div class="ui-speaker-block">
+                <div class="ui-speaker-head"><span>Speaker 2</span><span>01:45</span></div>
+                <div class="ui-speaker-text">The Knowledge Hub acts as our AI-driven knowledge base, integrated with Outlook, Gmail, and Calendar.</div>
+              </div>
+              <div class="ui-speaker-block">
+                <div class="ui-speaker-head"><span>Speaker 1</span><span>03:20</span></div>
+                <div class="ui-speaker-text">Action: Draft onboarding checklist from handbook excerpts — assign to HR AI.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="product-info">
+        <div class="product-number">03</div>
+        <h3>Meeting Minutes & Transcripts</h3>
+        <p>Upload recordings or notes and get speaker-labeled transcripts, decisions, owners, and action items. Paste structured output into Outlook, Teams, or your PM tool — with full traceability back to the source.</p>
+        <div class="product-tags">
+          <span class="product-tag">Trilingual</span>
+          <span class="product-tag">Speaker ID</span>
+          <span class="product-tag">Action Items</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="section-header">
+    <div class="section-label"><i class="fa-solid fa-sparkles"></i> Features</div>
+    <h2 class="section-title">Why Choose AI Staff Hub</h2>
+    <p class="section-desc">Built for Hong Kong and Greater China enterprises — complementing the tools you already use.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card" data-animate>
+      <div class="feature-icon purple"><i class="fa-solid fa-building"></i></div>
+      <h3>Enterprise Workflow Platform</h3>
+      <p>Purpose-built for department-level AI tasks — finance, HR, legal, ops, and marketing — not generic chatbots.</p>
+    </div>
+    <div class="feature-card" data-animate>
+      <div class="feature-icon cyan"><i class="fa-solid fa-book-open"></i></div>
+      <h3>Unified Knowledge Hub</h3>
+      <p>Centralize SOPs, policies, and documents into one AI-searchable knowledge base with cited answers your team can trust.</p>
+    </div>
+    <div class="feature-card" data-animate>
+      <div class="feature-icon green"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+      <h3>Agentic AI Skills</h3>
+      <p>Go beyond Q&amp;A — deploy skills that extract data, draft documents, run workflows, and hand off to humans for approval.</p>
+    </div>
+    <div class="feature-card" data-animate>
+      <div class="feature-icon orange"><i class="fa-solid fa-plug"></i></div>
+      <h3>Deep Office Integration</h3>
+      <p>Works alongside Microsoft 365, Outlook, Gmail, Calendar, CRM, and ERP — speeding up work without replacing your stack.</p>
+    </div>
+    <div class="feature-card" data-animate>
+      <div class="feature-icon pink"><i class="fa-solid fa-microphone-lines"></i></div>
+      <h3>Smart Meeting Insights</h3>
+      <p>Auto-transcribe with speaker labels, extract decisions and owners, and keep an auditable trail from recording to task.</p>
+    </div>
+    <div class="feature-card" data-animate>
+      <div class="feature-icon blue"><i class="fa-solid fa-globe"></i></div>
+      <h3>Trilingual + HK Storage</h3>
+      <p>English, Traditional/Simplified Chinese, and Cantonese — with encrypted file storage in Hong Kong data centres.</p>
+    </div>
+  </div>
+</section>
+
+<section class="pricing" id="pricing">
+  <div class="section-header">
+    <div class="section-label"><i class="fa-solid fa-tags"></i> Pricing</div>
+    <h2 class="section-title">From Free to Enterprise</h2>
+    <p class="section-desc">Start free. Upgrade when you need more credits and storage. All prices in USD.</p>
+  </div>
+  <div class="pricing-grid">
+    <div class="pricing-card" data-animate>
+      <h3>Free</h3>
+      <p class="desc">Explore what AI Staff Hub can do for your team.</p>
+      <div class="price">$0</div>
+      <div class="period">one-time credits</div>
+      <ul>
+        <li><i class="fa-solid fa-check"></i> 20 credits (one-time)</li>
+        <li><i class="fa-solid fa-check"></i> 1 GB storage</li>
+      </ul>
+      <a href="https://hub.notonlyoffice.ai/login" class="btn btn-outline">Get Started</a>
+    </div>
+    <div class="pricing-card" data-animate>
+      <h3>Starter</h3>
+      <p class="desc">For individuals and light usage.</p>
+      <div class="price">$5</div>
+      <div class="period">per month</div>
+      <ul>
+        <li><i class="fa-solid fa-check"></i> 500 credits / month</li>
+        <li><i class="fa-solid fa-check"></i> 2 GB storage</li>
+      </ul>
+      <a href="https://hub.notonlyoffice.ai/login" class="btn btn-outline">Get Started</a>
+    </div>
+    <div class="pricing-card" data-animate>
+      <h3>Basic</h3>
+      <p class="desc">Daily AI workflows for growing teams.</p>
+      <div class="price">$20</div>
+      <div class="period">per month</div>
+      <ul>
+        <li><i class="fa-solid fa-check"></i> 2,000 credits / month</li>
+        <li><i class="fa-solid fa-check"></i> 10 GB storage</li>
+      </ul>
+      <a href="https://hub.notonlyoffice.ai/login" class="btn btn-outline">Get Started</a>
+    </div>
+    <div class="pricing-card popular" data-animate>
+      <span class="pricing-badge">Popular</span>
+      <h3>Standard</h3>
+      <p class="desc">Balanced credits and storage for SMBs.</p>
+      <div class="price">$50</div>
+      <div class="period">per month</div>
+      <ul>
+        <li><i class="fa-solid fa-check"></i> 5,000 credits / month</li>
+        <li><i class="fa-solid fa-check"></i> 25 GB storage</li>
+      </ul>
+      <a href="https://hub.notonlyoffice.ai/login" class="btn btn-primary">Get Started</a>
+    </div>
+    <div class="pricing-card" data-animate>
+      <h3>Professional</h3>
+      <p class="desc">Higher quotas for daily department use.</p>
+      <div class="price">$120</div>
+      <div class="period">per month</div>
+      <ul>
+        <li><i class="fa-solid fa-check"></i> 12,000 credits / month</li>
+        <li><i class="fa-solid fa-check"></i> 100 GB storage</li>
+      </ul>
+      <a href="https://hub.notonlyoffice.ai/login" class="btn btn-outline">Get Started</a>
+    </div>
+    <div class="pricing-card" data-animate>
+      <h3>Enterprise</h3>
+      <p class="desc">Volume, governance, and dedicated support.</p>
+      <div class="price">$300</div>
+      <div class="period">per month</div>
+      <ul>
+        <li><i class="fa-solid fa-check"></i> 30,000 credits / month</li>
+        <li><i class="fa-solid fa-check"></i> 500 GB storage</li>
+      </ul>
+      <a href="#contact" class="btn btn-outline">Contact Us</a>
+    </div>
+  </div>
+
+  <div class="addons">
+    <h3>Add-on Bundles</h3>
+    <p style="color:var(--text-light);font-size:0.9rem;margin-bottom:20px;">Purchase credits or storage independently.</p>
+    <div class="addons-grid">
+      <div class="addon-card"><div class="amount">+500 credits</div><div class="cost">$25</div></div>
+      <div class="addon-card"><div class="amount">+2,000 credits</div><div class="cost">$100</div></div>
+      <div class="addon-card"><div class="amount">+5 GB storage</div><div class="cost">$10</div></div>
+      <div class="addon-card"><div class="amount">+20 GB storage</div><div class="cost">$20</div></div>
+    </div>
+  </div>
+  <p class="pricing-note">Prices shown in USD. Taxes and billing details per order or contract.</p>
+</section>
+
+<footer class="footer" id="contact">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <span class="logo-text">Not Only Office · AI Staff Hub</span>
+        <p>AI workflow platform for Hong Kong and Greater China enterprises. Meetings, documents, and department AI staff — with trilingual support and HK data residency.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#products">Chat Workspace</a></li>
+          <li><a href="#products">Digital Staff Dashboard</a></li>
+          <li><a href="#products">Meeting Minutes</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="https://notonlyoffice.ai/zh-Hant/about">About Us</a></li>
+          <li><a href="https://notonlyoffice.ai/zh-Hant/contact">Contact</a></li>
+          <li><a href="https://notonlyoffice.ai/zh-Hant/support">Support</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="mailto:cs@wyni.technology"><i class="fa-solid fa-envelope"></i> cs@wyni.technology</a></li>
+          <li><a href="#">Hong Kong</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Not Only Office. All rights reserved.</p>
+      <div class="footer-bottom-links">
+        <a href="https://notonlyoffice.ai/zh-Hant/privacy">Privacy Policy</a>
+        <a href="https://notonlyoffice.ai/zh-Hant/terms">Terms of Service</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<div class="modal-overlay" id="authModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+    <h2 id="modalTitle">Welcome Back</h2>
+    <p class="subtitle" id="modalSubtitle">Sign in to access your AI Staff dashboard</p>
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tabSignin" onclick="switchTab('signin')">Sign In</button>
+      <button class="modal-tab" id="tabSignup" onclick="switchTab('signup')">Sign Up</button>
+    </div>
+    <div class="form-panel active" id="panelSignin">
+      <div class="form-group"><label>Email</label><input type="email" placeholder="you@company.com"></div>
+      <div class="form-group"><label>Password</label><input type="password" placeholder="Enter password"></div>
+      <a href="https://hub.notonlyoffice.ai/login" class="btn btn-primary">Sign In <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div class="form-panel" id="panelSignup">
+      <div class="form-group"><label>Full Name</label><input type="text" placeholder="Your name"></div>
+      <div class="form-group"><label>Email</label><input type="email" placeholder="you@company.com"></div>
+      <div class="form-group"><label>Password</label><input type="password" placeholder="Create password"></div>
+      <a href="https://hub.notonlyoffice.ai/login" class="btn btn-primary">Create Account <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+  </div>
+</div>
+
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <i class="fa-solid fa-arrow-up"></i>
+</button>
+
+<script>
+  const header = document.getElementById('header');
+  const scrollTopBtn = document.getElementById('scrollTop');
+  const navLinks = document.querySelectorAll('.nav-links a');
+
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('scrolled', window.scrollY > 50);
+    scrollTopBtn.classList.toggle('visible', window.scrollY > 500);
+
+    const sections = ['hero', 'products', 'features', 'pricing', 'contact'];
+    let current = 'hero';
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && window.scrollY >= el.offsetTop - 120) current = id;
+    });
+    navLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('[data-animate]').forEach(el => observer.observe(el));
+
+  function openModal(tab) {
+    document.getElementById('authModal').classList.add('active');
+    switchTab(tab || 'signin');
+  }
+  function closeModal() { document.getElementById('authModal').classList.remove('active'); }
+  function switchTab(tab) {
+    const isSignin = tab === 'signin';
+    document.getElementById('tabSignin').classList.toggle('active', isSignin);
+    document.getElementById('tabSignup').classList.toggle('active', !isSignin);
+    document.getElementById('panelSignin').classList.toggle('active', isSignin);
+    document.getElementById('panelSignup').classList.toggle('active', !isSignin);
+    document.getElementById('modalTitle').textContent = isSignin ? 'Welcome Back' : 'Get Started';
+  }
+  document.getElementById('authModal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeModal();
+  });
+
+  const chatResponses = [
+    'AI Staff Hub supports finance, HR, legal, ops, and marketing workflows. Sign up free to explore!',
+    'You can upload meetings, extract documents, and ask against your Knowledge Hub — all with human review.',
+    'We complement Microsoft 365 and ERP — your data stays in HK encrypted storage. Ready to start?',
+    'Check our Pricing tab for plans from free to enterprise. The Standard plan is most popular for SMBs.'
+  ];
+  let responseIndex = 0;
+
+  function sendChat() {
+    const input = document.getElementById('chatInput');
+    const body = document.getElementById('chatBody');
+    const msg = input.value.trim();
+    if (!msg) return;
+    const userDiv = document.createElement('div');
+    userDiv.className = 'chat-msg user';
+    userDiv.innerHTML = '<div class="chat-msg-avatar"><i class="fa-solid fa-user"></i></div><div class="chat-msg-bubble">' + msg + '</div>';
+    body.appendChild(userDiv);
+    input.value = '';
+    body.scrollTop = body.scrollHeight;
+    setTimeout(() => {
+      const botDiv = document.createElement('div');
+      botDiv.className = 'chat-msg bot';
+      botDiv.innerHTML = '<div class="chat-msg-avatar"><i class="fa-solid fa-robot"></i></div><div class="chat-msg-bubble">' + chatResponses[responseIndex++ % chatResponses.length] + '</div>';
+      body.appendChild(botDiv);
+      body.scrollTop = body.scrollHeight;
+    }, 800);
+  }
+</script>
+</body>
+</html>
